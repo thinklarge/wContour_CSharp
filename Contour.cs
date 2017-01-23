@@ -15,9 +15,9 @@ namespace wContour
     /// <summary>
     /// Contour
     /// </summary>
-    public static class Contour
+    public class Contour
     {
-        private static List<EndPoint> _endPointList = new List<EndPoint>();
+        private List<EndPoint> _endPointList = new List<EndPoint>();
 
         #region Public Contour Methods
 
@@ -33,7 +33,7 @@ namespace wContour
         /// <param name="borders">borders</param>
         /// <param name="S1">data flag array</param>
         /// <returns>Contour line list</returns>
-        public static List<PolyLine> TracingContourLines(double[,] S0, double[] X, double[] Y,
+        public List<PolyLine> TracingContourLines(double[,] S0, double[] X, double[] Y,
             int nc, double[] contour, double undefData, List<Border> borders, int[,] S1)
         {            
             double dx = X[1] - X[0];
@@ -54,7 +54,7 @@ namespace wContour
         /// <param name="S1"></param>
         /// <param name="undefData">undefine data</param>
         /// <returns>borderline list</returns>
-        public static List<Border> TracingBorders(double[,] S0, double[] X, double[] Y, ref int[,] S1, double undefData)
+        public List<Border> TracingBorders(double[,] S0, double[] X, double[] Y, ref int[,] S1, double undefData)
         {
             List<BorderLine> borderLines = new List<BorderLine>();
 
@@ -456,7 +456,7 @@ namespace wContour
         /// <param name="undefData">Undefine data</param>
         /// <param name="borders">Border line list</param>
         /// <returns>Contour line list</returns>
-        private static List<PolyLine> CreateContourLines_UndefData(double[,] S0, double[] X, double[] Y,
+        private List<PolyLine> CreateContourLines_UndefData(double[,] S0, double[] X, double[] Y,
             int nc, double[] contour, double nx, double ny, int[,] S1, double undefData, List<Border> borders)
         {
             List<PolyLine> contourLineList = new List<PolyLine>();
@@ -686,7 +686,7 @@ namespace wContour
         /// <param name="alinelist">polyline list</param>
         /// <param name="polyList">border points of the cut polygon</param>
         /// <returns>Inside Polylines after cut</returns>
-        private static List<PolyLine> CutContourWithPolygon(List<PolyLine> alinelist, List<PointD> polyList)
+        private List<PolyLine> CutContourWithPolygon(List<PolyLine> alinelist, List<PointD> polyList)
         {
             List<PolyLine> newLineList = new List<PolyLine>();
             int i, j, k;
@@ -831,7 +831,7 @@ namespace wContour
         /// <param name="alinelist">polyline list</param>
         /// <param name="aBorder">border for cutting</param>
         /// <returns>Inside Polylines after cut</returns>
-        private static List<PolyLine> CutContourLines(List<PolyLine> alinelist, Border aBorder)
+        private List<PolyLine> CutContourLines(List<PolyLine> alinelist, Border aBorder)
         {
             List<PointD> pointList = aBorder.LineList[0].pointList;
             List<PolyLine> newLineList = new List<PolyLine>();
@@ -979,7 +979,7 @@ namespace wContour
         /// </summary>
         /// <param name="aLineList">Polyline list</param>
         /// <returns>Polyline list after smoothing</returns>
-        public static List<PolyLine> SmoothLines(List<PolyLine> aLineList)
+        public List<PolyLine> SmoothLines(List<PolyLine> aLineList)
         {
             return SmoothLines(aLineList, 0.05f);
         }
@@ -990,7 +990,7 @@ namespace wContour
         /// <param name="aLineList">Polyline list</param>
         /// <param name="step">B-Spline scan step (0 - 1)</param>
         /// <returns>Polyline list after smoothing</returns>
-        public static List<PolyLine> SmoothLines(List<PolyLine> aLineList, float step)
+        public List<PolyLine> SmoothLines(List<PolyLine> aLineList, float step)
         {
             List<PolyLine> newLineList = new List<PolyLine>();
             int i;
@@ -1058,7 +1058,7 @@ namespace wContour
         /// <param name="borderList">borders</param>
         /// <param name="contour">contour values</param>
         /// <returns>traced contour polygons</returns>
-        public static List<Polygon> TracingPolygons(double[,] S0, List<PolyLine> cLineList, List<Border> borderList, double[] contour)
+        public List<Polygon> TracingPolygons(double[,] S0, List<PolyLine> cLineList, List<Border> borderList, double[] contour)
         {
             List<Polygon> aPolygonList = new List<Polygon>(), newPolygonList = new List<Polygon>();
             List<BorderPoint> newBPList = new List<BorderPoint>();
@@ -1331,7 +1331,7 @@ namespace wContour
         /// <param name="aBound">extent</param>
         /// <param name="contour">contour values</param>
         /// <returns>contour polygons</returns>
-        private static List<Polygon> CreateCutContourPolygons(List<PolyLine> LineList, List<PointD> polyList, Extent aBound, double[] contour)
+        private List<Polygon> CreateCutContourPolygons(List<PolyLine> LineList, List<PointD> polyList, Extent aBound, double[] contour)
         {
             List<Polygon> aPolygonList = new List<Polygon>();
             List<BorderPoint> newBorderList = new List<BorderPoint>();
@@ -2329,7 +2329,7 @@ namespace wContour
             return canTrace;
         }
 
-        private static List<PolyLine> Isoline_UndefData(double[,] S0, double[] X, double[] Y,
+        private List<PolyLine> Isoline_UndefData(double[,] S0, double[] X, double[] Y,
             double W, double nx, double ny, 
             ref double[,] S, ref double[,] H, int[, ,] SB, int[, ,] HB, int lineNum)
         {
