@@ -4609,6 +4609,15 @@ namespace wContour
                 aLine = new PolyLine();
                 aLine.Type = "Border";
                 aLine.Value = aValue;
+                aPolygon.IsHighCenter = false;
+                if (closedPolygons.Count > 0)
+                {
+                    if (borderList[0].Value >= closedPolygons[0].LowValue)
+                    {
+                        aPolygon.IsHighCenter = true;
+                    }
+                }
+
                 newPList.Clear();
                 foreach (BorderPoint aP in borderList)
                 {
