@@ -16,11 +16,11 @@ namespace wContour
     public class IJPoint
     {
         /// <summary>
-        /// I
+        /// I - Longitude
         /// </summary>
         public int I;
         /// <summary>
-        /// J
+        /// J - Latitude
         /// </summary>
         public int J;
     }

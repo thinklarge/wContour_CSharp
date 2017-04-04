@@ -16,11 +16,11 @@ namespace wContour
     public class PointD
     {
         /// <summary>
-        /// x
+        /// x - Latitude
         /// </summary>
         public double X;
         /// <summary>
-        /// y
+        /// y - Longitude
         /// </summary>
         public double Y;
 
