@@ -620,7 +620,7 @@ namespace wContour
         /// <param name="nx">Interval of X coordinate</param>
         /// <param name="ny">Interval of Y coordinate</param>
         /// <returns></returns>
-        private static List<PolyLine> CreateContourLines(double[,] S0, double[] X, double[] Y, int nc, double[] contour, double nx, double ny)
+        private List<PolyLine> CreateContourLines(double[,] S0, double[] X, double[] Y, int nc, double[] contour, double nx, double ny)
         {
             List<PolyLine> contourLineList = new List<PolyLine>(), bLineList = new List<PolyLine>(), lLineList = new List<PolyLine>(),
                 tLineList = new List<PolyLine>(), rLineList = new List<PolyLine>(), cLineList = new List<PolyLine>();
@@ -1046,7 +1046,7 @@ namespace wContour
         /// </summary>
         /// <param name="pointList">point list</param>
         /// <returns>new points</returns>
-        public static List<PointD> SmoothPoints(List<PointD> pointList)
+        public List<PointD> SmoothPoints(List<PointD> pointList)
         {
             return BSplineScanning(pointList);
         }
@@ -1310,7 +1310,7 @@ namespace wContour
         /// <param name="aBound">gid data extent</param>
         /// <param name="contour">contour values</param>
         /// <returns>contour polygons</returns>
-        private static List<Polygon> CreateContourPolygons(List<PolyLine> LineList, Extent aBound, double[] contour)
+        private List<Polygon> CreateContourPolygons(List<PolyLine> LineList, Extent aBound, double[] contour)
         {
             List<Polygon> aPolygonList = new List<Polygon>();
             List<BorderPoint> newBorderList = new List<BorderPoint>();
@@ -1372,7 +1372,7 @@ namespace wContour
         /// <param name="aBound">extent</param>
         /// <param name="contour">contour value</param>
         /// <returns>contour polygons</returns>
-        private static List<Polygon> CreateBorderContourPolygons(double[,] S0, List<PolyLine> cLineList, List<Border> borderList, Extent aBound, double[] contour)
+        private List<Polygon> CreateBorderContourPolygons(double[,] S0, List<PolyLine> cLineList, List<Border> borderList, Extent aBound, double[] contour)
         {
             List<Polygon> aPolygonList = new List<Polygon>(), newPolygonList = new List<Polygon>();
             List<BorderPoint> newBPList = new List<BorderPoint>();
@@ -1570,7 +1570,7 @@ namespace wContour
         /// <param name="poly">polygon border</param>
         /// <param name="aPoint">point</param>
         /// <returns>If the point is in the polygon</returns>
-        public static bool PointInPolygon(List<PointD> poly, PointD aPoint)
+        public bool PointInPolygon(List<PointD> poly, PointD aPoint)
         {
             double xNew, yNew, xOld, yOld;
             double x1, y1, x2, y2;
@@ -1620,7 +1620,7 @@ namespace wContour
         /// <param name="aPolygon">polygon</param>
         /// <param name="aPoint">point</param>
         /// <returns>is in</returns>
-        public static bool PointInPolygon(Polygon aPolygon, PointD aPoint)
+        public bool PointInPolygon(Polygon aPolygon, PointD aPoint)
         {
             if (aPolygon.HasHoles)
             {
@@ -1649,7 +1649,7 @@ namespace wContour
         /// <param name="polylines">polyline list</param>
         /// <param name="clipPList">cutting border point list</param>
         /// <returns>cutted polylines</returns>
-        public static List<PolyLine> ClipPolylines(List<PolyLine> polylines, List<PointD> clipPList)
+        public List<PolyLine> ClipPolylines(List<PolyLine> polylines, List<PointD> clipPList)
         {
             List<PolyLine> newPolylines = new List<PolyLine>();
             foreach (PolyLine aPolyline in polylines)
@@ -1666,7 +1666,7 @@ namespace wContour
         /// <param name="polygons">polygon list</param>
         /// <param name="clipPList">cutting border point list</param>
         /// <returns>cutted polygons</returns>
-        public static List<Polygon> ClipPolygons(List<Polygon> polygons, List<PointD> clipPList)
+        public List<Polygon> ClipPolygons(List<Polygon> polygons, List<PointD> clipPList)
         {
             List<Polygon> newPolygons = new List<Polygon>();
             for (int i = 0; i < polygons.Count; i++)
@@ -1715,7 +1715,7 @@ namespace wContour
         /// <param name="UNDEF">undefine data</param>
         /// <param name="density">stream line density</param>
         /// <returns>streamlines</returns>
-        public static List<PolyLine> TracingStreamline(double[,] U, double[,] V, double[] X, double[] Y, double UNDEF, int density)
+        public List<PolyLine> TracingStreamline(double[,] U, double[,] V, double[] X, double[] Y, double UNDEF, int density)
         {
             List<PolyLine> streamLines = new List<PolyLine>();
             int xNum = U.GetLength(1);
@@ -1892,7 +1892,7 @@ namespace wContour
             return streamLines;
         }
 
-        private static bool TracingStreamlinePoint(ref PointD aPoint, double[,] Dx, double[,] Dy, double[] X, double[] Y,
+        private bool TracingStreamlinePoint(ref PointD aPoint, double[,] Dx, double[,] Dy, double[] X, double[] Y,
             ref int ii, ref int jj, bool isForward)
         {
             double a, b, c, d, val1, val2;
@@ -1970,7 +1970,7 @@ namespace wContour
 
         #region Private contour methods
 
-        private static bool TraceBorder(int[,] S1, int i1, int i2, int j1, int j2, ref int i3, ref int j3)
+        private bool TraceBorder(int[,] S1, int i1, int i2, int j1, int j2, ref int i3, ref int j3)
         {
             bool canTrace = true;
             int a, b, c, d;
@@ -2710,7 +2710,7 @@ namespace wContour
             return cLineList;
         }
 
-        private static bool TraceIsoline_UndefData(int i1, int i2, ref double[,] H, ref double[,] S, int j1, int j2, double[] X,
+        private bool TraceIsoline_UndefData(int i1, int i2, ref double[,] H, ref double[,] S, int j1, int j2, double[] X,
             double[] Y, double nx, double ny, double a2x, ref int i3,
             ref int j3, ref double a3x, ref double a3y, ref bool isS)
         {
@@ -2932,7 +2932,7 @@ namespace wContour
             return canTrace;
         }
 
-        private static object[] TraceIsoline(int i1, int i2, ref double[,] H, ref double[,] S, int j1, int j2, double[] X,
+        private object[] TraceIsoline(int i1, int i2, ref double[,] H, ref double[,] S, int j1, int j2, double[] X,
             double[] Y, double nx, double ny, double a2x)
         {
             int i3, j3;
@@ -3125,7 +3125,7 @@ namespace wContour
             return new Object[] { i3, j3, a3x, a3y };
         }
 
-        private static List<PolyLine> Isoline_Bottom(double[,] S0, double[] X, double[] Y, double W, double nx, double ny,
+        private List<PolyLine> Isoline_Bottom(double[,] S0, double[] X, double[] Y, double W, double nx, double ny,
             ref double[,] S, ref double[,] H)
         {
             List<PolyLine> bLineList = new List<PolyLine>();
@@ -3189,7 +3189,7 @@ namespace wContour
             return bLineList;
         }
 
-        private static List<PolyLine> Isoline_Left(double[,] S0, double[] X, double[] Y, double W, double nx, double ny,
+        private List<PolyLine> Isoline_Left(double[,] S0, double[] X, double[] Y, double W, double nx, double ny,
             ref double[,] S, ref double[,] H)
         {
             List<PolyLine> lLineList = new List<PolyLine>();
@@ -3253,7 +3253,7 @@ namespace wContour
             return lLineList;
         }
 
-        private static List<PolyLine> Isoline_Top(double[,] S0, double[] X, double[] Y, double W, double nx, double ny,
+        private List<PolyLine> Isoline_Top(double[,] S0, double[] X, double[] Y, double W, double nx, double ny,
                 ref double[,] S, ref double[,] H)
         {
             List<PolyLine> tLineList = new List<PolyLine>();
@@ -3318,7 +3318,7 @@ namespace wContour
             return tLineList;
         }
 
-        private static List<PolyLine> Isoline_Right(double[,] S0, double[] X, double[] Y, double W, double nx, double ny,
+        private List<PolyLine> Isoline_Right(double[,] S0, double[] X, double[] Y, double W, double nx, double ny,
                 ref double[,] S, ref double[,] H)
         {
             List<PolyLine> rLineList = new List<PolyLine>();
@@ -3382,7 +3382,7 @@ namespace wContour
             return rLineList;
         }
 
-        private static List<PolyLine> Isoline_Close(double[,] S0, double[] X, double[] Y, double W, double nx, double ny,
+        private List<PolyLine> Isoline_Close(double[,] S0, double[] X, double[] Y, double W, double nx, double ny,
                 ref double[,] S, ref double[,] H)
         {
             List<PolyLine> cLineList = new List<PolyLine>();
@@ -3514,7 +3514,7 @@ namespace wContour
             return cLineList;
         }
 
-        private static List<Polygon> TracingPolygons(List<PolyLine> LineList, List<BorderPoint> borderList, Extent bBound, double[] contour)
+        private List<Polygon> TracingPolygons(List<PolyLine> LineList, List<BorderPoint> borderList, Extent bBound, double[] contour)
         {
             if (LineList.Count == 0)
                 return new List<Polygon>();
@@ -4030,7 +4030,7 @@ namespace wContour
 
             return aPolygonList;
         }
-        private static List<Polygon> TracingPolygons(List<PolyLine> LineList, List<BorderPoint> borderList)
+        private List<Polygon> TracingPolygons(List<PolyLine> LineList, List<BorderPoint> borderList)
         {
             if (LineList.Count == 0)
                 return new List<Polygon>();
@@ -4324,7 +4324,7 @@ namespace wContour
             return aPolygonList;
         }
 
-        private static List<Polygon> TracingClipPolygons(Polygon inPolygon, List<PolyLine> LineList, List<BorderPoint> borderList)
+        private List<Polygon> TracingClipPolygons(Polygon inPolygon, List<PolyLine> LineList, List<BorderPoint> borderList)
         {
             if (LineList.Count == 0)
                 return new List<Polygon>();
@@ -4568,7 +4568,7 @@ namespace wContour
             return aPolygonList;
         }
 
-        private static List<Polygon> JudgePolygonHighCenter(List<Polygon> borderPolygons, List<Polygon> closedPolygons,
+        private List<Polygon> JudgePolygonHighCenter(List<Polygon> borderPolygons, List<Polygon> closedPolygons,
             List<PolyLine> aLineList, List<BorderPoint> borderList)
         {
             int i, j;
@@ -4679,7 +4679,7 @@ namespace wContour
             return borderPolygons;
         }
 
-        private static List<Polygon> JudgePolygonHighCenter_old(List<Polygon> borderPolygons, List<Polygon> closedPolygons,
+        private List<Polygon> JudgePolygonHighCenter_old(List<Polygon> borderPolygons, List<Polygon> closedPolygons,
             List<PolyLine> aLineList, List<BorderPoint> borderList)
         {
             int i, j;
@@ -4788,7 +4788,7 @@ namespace wContour
             return borderPolygons;
         }
 
-        //private static List<Polygon> TracingPolygons_Ring_Back(List<PolyLine> LineList, List<BorderPoint> borderList, Extent bBound,
+        //private List<Polygon> TracingPolygons_Ring_Back(List<PolyLine> LineList, List<BorderPoint> borderList, Extent bBound,
         //    double[] contour, int[] pNums)
         //{
         //    List<Polygon> aPolygonList = new List<Polygon>();
@@ -5130,7 +5130,7 @@ namespace wContour
         //    return newPolygonlist;
         //}        
 
-        //private static List<Polygon> TracingPolygons_Ring_Old(List<PolyLine> LineList, List<BorderPoint> borderList, Border aBorder,
+        //private List<Polygon> TracingPolygons_Ring_Old(List<PolyLine> LineList, List<BorderPoint> borderList, Border aBorder,
         //    double[] contour, int[] pNums)
         //{
         //    List<Polygon> aPolygonList = new List<Polygon>();
@@ -5728,7 +5728,7 @@ namespace wContour
         //    return newPolygonlist;
         //}
 
-        private static List<Polygon> TracingPolygons_Ring(List<PolyLine> LineList, List<BorderPoint> borderList, Border aBorder,
+        private List<Polygon> TracingPolygons_Ring(List<PolyLine> LineList, List<BorderPoint> borderList, Border aBorder,
             double[] contour, int[] pNums)
         {
             List<Polygon> aPolygonList = new List<Polygon>();
@@ -6241,7 +6241,7 @@ namespace wContour
             return aPolygonList;
         }
 
-        private static List<Polygon> AddPolygonHoles(List<Polygon> polygonList)
+        private List<Polygon> AddPolygonHoles(List<Polygon> polygonList)
         {
             List<Polygon> holePolygons = new List<Polygon>();
             int i, j;
@@ -6311,7 +6311,7 @@ namespace wContour
             }
         }
 
-        private static List<Polygon> AddPolygonHoles_Ring(List<Polygon> polygonList)
+        private List<Polygon> AddPolygonHoles_Ring(List<Polygon> polygonList)
         {
             List<Polygon> holePolygons = new List<Polygon>();
             int i, j;
@@ -6381,7 +6381,7 @@ namespace wContour
             }
         }
 
-        private static void AddHoles_Ring(ref List<Polygon> polygonList, List<List<PointD>> holeList)
+        private void AddHoles_Ring(ref List<Polygon> polygonList, List<List<PointD>> holeList)
         {
             int i, j;
             for (i = 0; i < holeList.Count; i++)
@@ -6416,7 +6416,7 @@ namespace wContour
         #endregion
 
         #region Clipping
-        private static List<PolyLine> CutPolyline(PolyLine inPolyline, List<PointD> clipPList)
+        private List<PolyLine> CutPolyline(PolyLine inPolyline, List<PointD> clipPList)
         {
             List<PolyLine> newPolylines = new List<PolyLine>();
             List<PointD> aPList = inPolyline.PointList;
@@ -6561,7 +6561,7 @@ namespace wContour
             return newPolylines;
         }
 
-        private static List<Polygon> CutPolygon_Hole(Polygon inPolygon, List<PointD> clipPList)
+        private List<Polygon> CutPolygon_Hole(Polygon inPolygon, List<PointD> clipPList)
         {
             List<Polygon> newPolygons = new List<Polygon>();
             List<PolyLine> newPolylines = new List<PolyLine>();
@@ -6832,7 +6832,7 @@ namespace wContour
             return newPolygons;
         }
 
-        private static List<Polygon> CutPolygon(Polygon inPolygon, List<PointD> clipPList)
+        private List<Polygon> CutPolygon(Polygon inPolygon, List<PointD> clipPList)
         {
             List<Polygon> newPolygons = new List<Polygon>();
             List<PolyLine> newPolylines = new List<PolyLine>();
@@ -7042,7 +7042,7 @@ namespace wContour
         }
 
 
-        private static bool TwoPointsInside(int a1, int a2, int b1, int b2)
+        private bool TwoPointsInside(int a1, int a2, int b1, int b2)
         {
             if (a2 < a1)
                 a1 += 1;
@@ -7078,7 +7078,7 @@ namespace wContour
         #endregion
 
         #region Smoothing Methods
-        private static List<PointD> BSplineScanning(List<PointD> pointList)
+        private List<PointD> BSplineScanning(List<PointD> pointList)
         {
             bool isClose = false;
             int n = pointList.Count;
@@ -7088,7 +7088,7 @@ namespace wContour
             return BSplineScanning(pointList, isClose, 0.05f);
         }
 
-        private static List<PointD> BSplineScanning(List<PointD> pointList, bool isClose)
+        private List<PointD> BSplineScanning(List<PointD> pointList, bool isClose)
         {
             return BSplineScanning(pointList, isClose, 0.05f);
         }
@@ -7100,7 +7100,7 @@ namespace wContour
         /// <param name="isClose">Is closed or not</param>
         /// <param name="step">Scan step (0 - 1)</param>
         /// <returns>Interpolated points</returns>
-        private static List<PointD> BSplineScanning(List<PointD> pointList, bool isClose, float step)
+        private List<PointD> BSplineScanning(List<PointD> pointList, bool isClose, float step)
         {
             Single t;
             int i;
@@ -7168,7 +7168,7 @@ namespace wContour
             return newPList;
         }
 
-        private static void BSpline(List<PointD> pointList, double t, int i, ref double X, ref double Y)
+        private void BSpline(List<PointD> pointList, double t, int i, ref double X, ref double Y)
         {
             double[] f = new double[4];
             fb(t, ref f);
@@ -7184,27 +7184,27 @@ namespace wContour
             }
         }
 
-        private static double f0(double t)
+        private double f0(double t)
         {
             return 1.0 / 6 * (-t + 1) * (-t + 1) * (-t + 1);
         }
 
-        private static double f1(double t)
+        private double f1(double t)
         {
             return 1.0 / 6 * (3 * t * t * t - 6 * t * t + 4);
         }
 
-        private static double f2(double t)
+        private double f2(double t)
         {
             return 1.0 / 6 * (-3 * t * t * t + 3 * t * t + 3 * t + 1);
         }
 
-        private static double f3(double t)
+        private double f3(double t)
         {
             return 1.0 / 6 * t * t * t;
         }
 
-        private static void fb(double t, ref double[] fs)
+        private void fb(double t, ref double[] fs)
         {
             fs[0] = f0(t);
             fs[1] = f1(t);
@@ -7215,7 +7215,7 @@ namespace wContour
         #endregion
 
         #region Other Methods
-        private static Extent GetExtent(List<PointD> pList)
+        private Extent GetExtent(List<PointD> pList)
         {
             double minX, minY, maxX, maxY;
             int i;
@@ -7250,7 +7250,7 @@ namespace wContour
             return aExtent;
         }
 
-        private static double GetExtentAndArea(List<PointD> pList, ref Extent aExtent)
+        private double GetExtentAndArea(List<PointD> pList, ref Extent aExtent)
         {
             double bArea, minX, minY, maxX, maxY;
             int i;
@@ -7331,7 +7331,7 @@ namespace wContour
 
         }
 
-        private static bool IsLineSegmentCross(Line lineA, Line lineB)
+        private bool IsLineSegmentCross(Line lineA, Line lineB)
         {
             Extent boundA = new Extent(), boundB = new Extent();
             List<PointD> PListA = new List<PointD>(), PListB = new List<PointD>();
@@ -7357,7 +7357,7 @@ namespace wContour
             }
         }
 
-        private static bool IsExtentCross(Extent aBound, Extent bBound)
+        private bool IsExtentCross(Extent aBound, Extent bBound)
         {
             if (aBound.xMin > bBound.xMax || aBound.xMax < bBound.xMin || aBound.yMin > bBound.yMax ||
               aBound.yMax < bBound.yMin)
@@ -7375,7 +7375,7 @@ namespace wContour
         /// <param name="bP1">point 1 of line b</param>
         /// <param name="bP2">point 2 of line b</param>
         /// <returns>cross point</returns>
-        public static PointF GetCrossPoint(PointF aP1, PointF aP2, PointF bP1, PointF bP2)
+        public PointF GetCrossPoint(PointF aP1, PointF aP2, PointF bP1, PointF bP2)
         {
             PointF IPoint = new PointF(0, 0);
             PointF p1, p2, q1, q2;
@@ -7408,7 +7408,7 @@ namespace wContour
             return IPoint;
         }
 
-        private static PointD GetCrossPoint(Line lineA, Line lineB)
+        private PointD GetCrossPoint(Line lineA, Line lineB)
         {
             PointD IPoint = new PointD();
             PointD p1, p2, q1, q2;
@@ -7441,7 +7441,7 @@ namespace wContour
             return IPoint;
         }
 
-        private static List<BorderPoint> InsertPoint2Border(List<BorderPoint> bPList, List<BorderPoint> aBorderList)
+        private List<BorderPoint> InsertPoint2Border(List<BorderPoint> bPList, List<BorderPoint> aBorderList)
         {
             BorderPoint aBPoint, bP;
             int i, j;
@@ -7478,7 +7478,7 @@ namespace wContour
             return BorderList;
         }
 
-        private static List<BorderPoint> InsertPoint2Border_old(List<BorderPoint> bPList, List<BorderPoint> aBorderList)
+        private List<BorderPoint> InsertPoint2Border_old(List<BorderPoint> bPList, List<BorderPoint> aBorderList)
         {
             BorderPoint aBPoint, bP;
             int i, j;
@@ -7526,7 +7526,7 @@ namespace wContour
             return BorderList;
         }
 
-        private static List<BorderPoint> InsertPoint2RectangleBorder(List<PolyLine> LineList, Extent aBound)
+        private List<BorderPoint> InsertPoint2RectangleBorder(List<PolyLine> LineList, Extent aBound)
         {
             BorderPoint bPoint, bP;
             PolyLine aLine;
@@ -7671,7 +7671,7 @@ namespace wContour
             return BorderList;
         }
 
-        private static List<BorderPoint> InsertEndPoint2Border(List<EndPoint> EPList, List<BorderPoint> aBorderList)
+        private List<BorderPoint> InsertEndPoint2Border(List<EndPoint> EPList, List<BorderPoint> aBorderList)
         {
             BorderPoint aBPoint, bP;
             int i, j, k;
@@ -7762,7 +7762,7 @@ namespace wContour
             return BorderList;
         }
 
-        private static List<BorderPoint> InsertPoint2Border_Ring(double[,] S0, List<BorderPoint> bPList, Border aBorder, ref int[] pNums)
+        private List<BorderPoint> InsertPoint2Border_Ring(double[,] S0, List<BorderPoint> bPList, Border aBorder, ref int[] pNums)
         {
             BorderPoint aBPoint, bP;
             int i, j, k;
@@ -7825,7 +7825,7 @@ namespace wContour
             return newBPList;
         }
 
-        private static double getAbsMinValue(double[,] S0)
+        private double getAbsMinValue(double[,] S0)
         {
             double min = 0, v;
             int m, n, i, j, idx;
@@ -7854,7 +7854,7 @@ namespace wContour
             return min;
         }
 
-        private static double getAbsMinValue(double[] values)
+        private double getAbsMinValue(double[] values)
         {
             double min = 0.0001, v;
             int n, i;
