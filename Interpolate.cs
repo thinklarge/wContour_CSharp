@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static wContour.MathUtils;
 
 namespace wContour
 {
@@ -692,7 +693,7 @@ namespace wContour
                             sum += eVal * w;
                             wSum += w;
                         }
-                        if (wSum < 0.000001)
+                        if (DoubleEqualsZero(wSum))
                         {
                             gridData[i, j] = unDefData;
                         }
@@ -1018,15 +1019,6 @@ namespace wContour
             }
 
             return GCoords;
-        }
-
-        private static bool DoubleEquals(double a, double b)
-        {
-            //if (Math.Abs(a - b) < 0.000001)
-            if (Math.Abs(a / b - 1) < 0.00000000001)
-                return true;
-            else
-                return false;
         }
 
         #endregion

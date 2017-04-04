@@ -9,6 +9,7 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using static wContour.MathUtils;
 
 namespace wContour
 {
@@ -35,7 +36,7 @@ namespace wContour
         /// <returns>Contour line list</returns>
         public List<PolyLine> TracingContourLines(double[,] S0, double[] X, double[] Y,
             int nc, double[] contour, double undefData, List<Border> borders, int[,] S1)
-        {            
+        {
             double dx = X[1] - X[0];
             double dy = Y[1] - Y[0];
             List<PolyLine> contourLines = CreateContourLines_UndefData(S0, X, Y, nc, contour, dx, dy, S1, undefData, borders);
@@ -361,7 +362,7 @@ namespace wContour
             BorderLine aLine, bLine;
             //---- Sort borderlines with area from small to big.
             //For inside border line analysis
-            for (i = 1; i < borderLines.Count; i++)    
+            for (i = 1; i < borderLines.Count; i++)
             {
                 aLine = (BorderLine)borderLines[i];
                 for (j = 0; j < i; j++)
@@ -419,7 +420,7 @@ namespace wContour
                         {
                             aPoint = bLine.pointList[0];
                             if (PointInPolygon(aLine.pointList, aPoint))    //bLine is inside of aLine
-                            {                                
+                            {
                                 bLine.isOutLine = false;
                                 if (IsClockwise(bLine.pointList))
                                 {
@@ -440,7 +441,7 @@ namespace wContour
             }
 
             return borders;
-        }        
+        }
 
         /// <summary>
         /// Create contour lines from the grid data with undefine data
@@ -469,7 +470,7 @@ namespace wContour
             double dShift;
             dShift = getAbsMinValue(contour) * 0.0000001;
             //dShift = contour[0] * 0.0000001;
-            if (dShift == 0)
+            if (DoubleEqualsZero(dShift))
                 dShift = 0.0000001;
             for (i = 0; i < m; i++)
             {
@@ -482,7 +483,7 @@ namespace wContour
             }
 
             //---- Define if H S are border
-            int[, ,] SB = new int[2, m, n - 1], HB = new int[2, m - 1, n];   //---- Which border and trace direction
+            int[,,] SB = new int[2, m, n - 1], HB = new int[2, m - 1, n];   //---- Which border and trace direction
             for (i = 0; i < m; i++)
             {
                 for (j = 0; j < n; j++)
@@ -606,7 +607,7 @@ namespace wContour
             }
 
             return contourLineList;
-        }       
+        }
 
         /// <summary>
         /// Create contour lines
@@ -631,7 +632,7 @@ namespace wContour
             double[,] S = new double[m, n - 1], H = new double[m - 1, n];
             double dShift;
             dShift = contour[0] * 0.00001;
-            if (dShift == 0)
+            if (DoubleEqualsZero(dShift))
                 dShift = 0.00001;
             for (i = 0; i < m; i++)
             {
@@ -707,7 +708,7 @@ namespace wContour
             {
                 aLine = alinelist[i];
                 aValue = aLine.Value;
-                aType = aLine.Type;                
+                aType = aLine.Type;
                 aPList = new List<PointD>(aLine.PointList);
                 ifInPolygon = false;
                 List<PointD> newPlist = new List<PointD>();
@@ -1075,7 +1076,7 @@ namespace wContour
             Polygon aPolygon;
             IJPoint aijP;
             double aValue = 0;
-            int[] pNums;            
+            int[] pNums;
 
             //Borders loop
             for (i = 0; i < borderList.Count; i++)
@@ -1089,7 +1090,7 @@ namespace wContour
                 aBLine = aBorder.LineList[0];
                 PList = aBLine.pointList;
                 if (!IsClockwise(PList))    //Make sure the point list is clockwise
-                    PList.Reverse();                
+                    PList.Reverse();
 
                 if (aBorder.LineNum == 1)    //The border has just one line
                 {
@@ -1246,7 +1247,7 @@ namespace wContour
                     {
                         pNums = new int[aBorder.LineNum];
                         newBPList = InsertPoint2Border_Ring(S0, bPList, aBorder, ref pNums);
-                        
+
                         aPolygonList = TracingPolygons_Ring(lineList, newBPList, aBorder, contour, pNums);
                         //aPolygonList = TracingPolygons(lineList, newBPList, contour);
 
@@ -1312,7 +1313,7 @@ namespace wContour
         private static List<Polygon> CreateContourPolygons(List<PolyLine> LineList, Extent aBound, double[] contour)
         {
             List<Polygon> aPolygonList = new List<Polygon>();
-            List<BorderPoint> newBorderList = new List<BorderPoint>();            
+            List<BorderPoint> newBorderList = new List<BorderPoint>();
 
             //---- Insert points to border list
             newBorderList = InsertPoint2RectangleBorder(LineList, aBound);
@@ -1360,7 +1361,7 @@ namespace wContour
             aPolygonList = TracingPolygons(LineList, newBorderList, aBound, contour);
 
             return aPolygonList;
-        }        
+        }
 
         /// <summary>
         /// Create contour polygons from borders
@@ -1371,7 +1372,7 @@ namespace wContour
         /// <param name="aBound">extent</param>
         /// <param name="contour">contour value</param>
         /// <returns>contour polygons</returns>
-        private static List<Polygon> CreateBorderContourPolygons(double[,] S0, List<PolyLine> cLineList, List<Border> borderList, Extent aBound,                double[] contour)
+        private static List<Polygon> CreateBorderContourPolygons(double[,] S0, List<PolyLine> cLineList, List<Border> borderList, Extent aBound, double[] contour)
         {
             List<Polygon> aPolygonList = new List<Polygon>(), newPolygonList = new List<Polygon>();
             List<BorderPoint> newBPList = new List<BorderPoint>();
@@ -1441,7 +1442,7 @@ namespace wContour
                             }
                         }
                     }
-                    
+
                     if (lineList.Count == 0)    //No contour lines in this border, the polygon is the border
                     {
                         //Judge the value of the polygon
@@ -1722,10 +1723,10 @@ namespace wContour
             double[,] Dx = new double[yNum, xNum];
             double[,] Dy = new double[yNum, xNum];
             double deltX = X[1] - X[0];
-            double deltY = Y[1] - Y[0];            
+            double deltY = Y[1] - Y[0];
             if (density == 0)
                 density = 1;
-            double radius = deltX / (density * density);                     
+            double radius = deltX / (density * density);
             int i, j;
 
             //Normalize wind components
@@ -1741,7 +1742,7 @@ namespace wContour
                     else
                     {
                         double WS = Math.Sqrt(U[i, j] * U[i, j] + V[i, j] * V[i, j]);
-                        if (WS == 0)
+                        if (DoubleEqualsZero(WS))
                             WS = 1;
                         Dx[i, j] = (U[i, j] / WS) * deltX / density;
                         Dy[i, j] = (V[i, j] / WS) * deltY / density;
@@ -1773,7 +1774,7 @@ namespace wContour
                     if (flags[i, j] == 0)    //No streamline started form this grid box, a new streamline started
                     {
                         List<PointD> pList = new List<PointD>();
-                        PointD aPoint = new PointD();                       
+                        PointD aPoint = new PointD();
                         int ii, jj;
                         int loopN;
                         PolyLine aPL = new PolyLine();
@@ -1829,7 +1830,7 @@ namespace wContour
                             }
 
                             loopN += 1;
-                        }                        
+                        }
 
                         //Tracing backword
                         aPoint.X = X[j] + deltX / 2;
@@ -1878,9 +1879,9 @@ namespace wContour
                             loopN += 1;
                         }
                         if (pList.Count > 1)
-                        {                            
+                        {
                             aPL.PointList = pList;
-                            streamLines.Add(aPL);                            
+                            streamLines.Add(aPL);
                         }
 
                     }
@@ -1900,7 +1901,7 @@ namespace wContour
             int yNum = Y.Length;
             double deltX = X[1] - X[0];
             double deltY = Y[1] - Y[0];
-            
+
             //Interpolation the U/V displacement components to the point
             a = Dx[ii, jj];
             b = Dx[ii, jj + 1];
@@ -1927,14 +1928,14 @@ namespace wContour
             {
                 aPoint.X -= dx;
                 aPoint.Y -= dy;
-            }            
+            }
 
             //Find the grid box that the point is located 
             if (!(aPoint.X >= X[jj] && aPoint.X <= X[jj + 1] && aPoint.Y >= Y[ii] && aPoint.Y <= Y[ii + 1]))
             {
                 if (aPoint.X < X[0] || aPoint.X > X[X.Length - 1] || aPoint.Y < Y[0] || aPoint.Y > Y[Y.Length - 1])
                 {
-                    return false;                    
+                    return false;
                 }
 
                 //Get the grid box of the point located
@@ -1964,7 +1965,7 @@ namespace wContour
 
             return true;
         }
-       
+
         #endregion
 
         #region Private contour methods
@@ -2330,8 +2331,8 @@ namespace wContour
         }
 
         private List<PolyLine> Isoline_UndefData(double[,] S0, double[] X, double[] Y,
-            double W, double nx, double ny, 
-            ref double[,] S, ref double[,] H, int[, ,] SB, int[, ,] HB, int lineNum)
+            double W, double nx, double ny,
+            ref double[,] S, ref double[,] H, int[,,] SB, int[,,] HB, int lineNum)
         {
 
             List<PolyLine> cLineList = new List<PolyLine>();
@@ -2355,7 +2356,7 @@ namespace wContour
                     {
                         if (SB[0, i, j] > -1)    //---- Border
                         {
-                            if (S[i, j] != -2)
+                            if (DoubleNotEquals(S[i, j], -2))
                             {
                                 pList = new List<PointD>();
                                 i2 = i;
@@ -2390,7 +2391,7 @@ namespace wContour
                                 aLine.BorderIdx = SB[0, i, j];
                                 while (true)
                                 {
-                                    if (TraceIsoline_UndefData(i1, i2, ref H, ref S, j1, j2, X, Y, nx, ny, a2x, ref i3, ref j3, ref a3x,                                                    ref a3y, ref isS))
+                                    if (TraceIsoline_UndefData(i1, i2, ref H, ref S, j1, j2, X, Y, nx, ny, a2x, ref i3, ref j3, ref a3x, ref a3y, ref isS))
                                     {
                                         aPoint = new PointD();
                                         aPoint.X = a3x;
@@ -2463,7 +2464,7 @@ namespace wContour
                     {
                         if (HB[0, i, j] > -1)    //---- Border
                         {
-                            if (H[i, j] != -2)
+                            if (DoubleNotEquals(H[i, j], -2))
                             {
                                 pList = new List<PointD>();
                                 i2 = i;
@@ -2498,7 +2499,7 @@ namespace wContour
                                 aLine.BorderIdx = HB[0, i, j];
                                 while (true)
                                 {
-                                    if (TraceIsoline_UndefData(i1, i2, ref H, ref S, j1, j2, X, Y, nx, ny, a2x, ref i3, ref j3, ref a3x,                                                    ref a3y, ref isS))
+                                    if (TraceIsoline_UndefData(i1, i2, ref H, ref S, j1, j2, X, Y, nx, ny, a2x, ref i3, ref j3, ref a3x, ref a3y, ref isS))
                                     {
                                         aPoint = new PointD();
                                         aPoint.X = a3x;
@@ -2573,17 +2574,17 @@ namespace wContour
             //---- Clear border points
             for (j = 0; j < n - 1; j++)
             {
-                if (S[0, j] != -2)
+                if (DoubleNotEquals(S[0, j], -2))
                     S[0, j] = -2;
-                if (S[m - 1, j] != -2)
+                if (DoubleNotEquals(S[m - 1, j], -2))
                     S[m - 1, j] = -2;
             }
 
             for (i = 0; i < m - 1; i++)
             {
-                if (H[i, 0] != -2)
+                if (DoubleNotEquals(H[i, 0], -2))
                     H[i, 0] = -2;
-                if (H[i, n - 1] != -2)
+                if (DoubleNotEquals(H[i, n - 1], -2))
                     H[i, n - 1] = -2;
             }
 
@@ -2592,7 +2593,7 @@ namespace wContour
             {
                 for (j = 1; j < n - 1; j++)
                 {
-                    if (H[i, j] != -2)
+                    if (DoubleNotEquals(H[i, j], -2))
                     {
                         List<PointD> pointList = new List<PointD>();
                         i2 = i;
@@ -2618,7 +2619,7 @@ namespace wContour
                                 aPoint.X = a3x;
                                 aPoint.Y = a3y;
                                 pointList.Add(aPoint);
-                                if (Math.Abs(a3y - sy) < 0.000001 && Math.Abs(a3x - sx) < 0.000001)
+                                if (DoubleEquals(a3y, sy) && DoubleEquals(a3x, sx))
                                     break;
 
                                 a2x = a3x;
@@ -2653,7 +2654,7 @@ namespace wContour
             {
                 for (j = 1; j < n - 2; j++)
                 {
-                    if (S[i, j] != -2)
+                    if (DoubleNotEquals(S[i, j], -2))
                     {
                         List<PointD> pointList = new List<PointD>();
                         i2 = i;
@@ -2679,7 +2680,7 @@ namespace wContour
                                 aPoint.X = a3x;
                                 aPoint.Y = a3y;
                                 pointList.Add(aPoint);
-                                if (Math.Abs(a3y - sy) < 0.000001 && Math.Abs(a3x - sx) < 0.000001)
+                                if (DoubleEquals(a3y, sy) && DoubleEquals(a3x, sx))
                                     break;
 
                                 a2x = a3x;
@@ -2716,7 +2717,7 @@ namespace wContour
             bool canTrace = true;
             if (i1 < i2)    //---- Trace from bottom
             {
-                if (H[i2, j2] != -2 && H[i2, j2 + 1] != -2)
+                if (DoubleNotEquals(H[i2, j2], -2) && DoubleNotEquals(H[i2, j2 + 1], -2))
                 {
                     if (H[i2, j2] < H[i2, j2 + 1])
                     {
@@ -2737,7 +2738,7 @@ namespace wContour
                         isS = false;
                     }
                 }
-                else if (H[i2, j2] != -2 && H[i2, j2 + 1] == -2)
+                else if (DoubleNotEquals(H[i2, j2], -2) && DoubleEquals(H[i2, j2 + 1], -2))
                 {
                     a3x = X[j2];
                     a3y = Y[i2] + H[i2, j2] * ny;
@@ -2746,7 +2747,7 @@ namespace wContour
                     H[i3, j3] = -2;
                     isS = false;
                 }
-                else if (H[i2, j2] == -2 && H[i2, j2 + 1] != -2)
+                else if (DoubleEquals(H[i2, j2], -2) && DoubleNotEquals(H[i2, j2 + 1], -2))
                 {
                     a3x = X[j2 + 1];
                     a3y = Y[i2] + H[i2, j2 + 1] * ny;
@@ -2755,7 +2756,7 @@ namespace wContour
                     H[i3, j3] = -2;
                     isS = false;
                 }
-                else if (S[i2 + 1, j2] != -2)
+                else if (DoubleNotEquals(S[i2 + 1, j2], -2))
                 {
                     a3x = X[j2] + S[i2 + 1, j2] * nx;
                     a3y = Y[i2 + 1];
@@ -2769,7 +2770,7 @@ namespace wContour
             }
             else if (j1 < j2)    //---- Trace from left
             {
-                if (S[i2, j2] != -2 && S[i2 + 1, j2] != -2)
+                if (DoubleNotEquals(S[i2, j2], -2) && DoubleNotEquals(S[i2 + 1, j2], -2))
                 {
                     if (S[i2, j2] < S[i2 + 1, j2])
                     {
@@ -2790,7 +2791,7 @@ namespace wContour
                         isS = true;
                     }
                 }
-                else if (S[i2, j2] != -2 && S[i2 + 1, j2] == -2)
+                else if (DoubleNotEquals(S[i2, j2], -2) && DoubleEquals(S[i2 + 1, j2], -2))
                 {
                     a3x = X[j2] + S[i2, j2] * nx;
                     a3y = Y[i2];
@@ -2799,7 +2800,7 @@ namespace wContour
                     S[i3, j3] = -2;
                     isS = true;
                 }
-                else if (S[i2, j2] == -2 && S[i2 + 1, j2] != -2)
+                else if (DoubleEquals(S[i2, j2], -2) && DoubleNotEquals(S[i2 + 1, j2], -2))
                 {
                     a3x = X[j2] + S[i2 + 1, j2] * nx;
                     a3y = Y[i2 + 1];
@@ -2808,7 +2809,7 @@ namespace wContour
                     S[i3, j3] = -2;
                     isS = true;
                 }
-                else if (H[i2, j2 + 1] != -2)
+                else if (DoubleNotEquals(H[i2, j2 + 1], -2))
                 {
                     a3x = X[j2 + 1];
                     a3y = Y[i2] + H[i2, j2 + 1] * ny;
@@ -2823,7 +2824,7 @@ namespace wContour
             }
             else if (X[j2] < a2x)    //---- Trace from top
             {
-                if (H[i2 - 1, j2] != -2 && H[i2 - 1, j2 + 1] != -2)
+                if (DoubleNotEquals(H[i2 - 1, j2], -2) && DoubleNotEquals(H[i2 - 1, j2 + 1], -2))
                 {
                     if (H[i2 - 1, j2] > H[i2 - 1, j2 + 1])    //---- < changed to >
                     {
@@ -2844,7 +2845,7 @@ namespace wContour
                         isS = false;
                     }
                 }
-                else if (H[i2 - 1, j2] != -2 && H[i2 - 1, j2 + 1] == -2)
+                else if (DoubleNotEquals(H[i2 - 1, j2], -2) && DoubleEquals(H[i2 - 1, j2 + 1], -2))
                 {
                     a3x = X[j2];
                     a3y = Y[i2 - 1] + H[i2 - 1, j2] * ny;
@@ -2853,7 +2854,7 @@ namespace wContour
                     H[i3, j3] = -2;
                     isS = false;
                 }
-                else if (H[i2 - 1, j2] == -2 && H[i2 - 1, j2 + 1] != -2)
+                else if (DoubleEquals(H[i2 - 1, j2], -2) && DoubleNotEquals(H[i2 - 1, j2 + 1], -2))
                 {
                     a3x = X[j2 + 1];
                     a3y = Y[i2 - 1] + H[i2 - 1, j2 + 1] * ny;
@@ -2862,7 +2863,7 @@ namespace wContour
                     H[i3, j3] = -2;
                     isS = false;
                 }
-                else if (S[i2 - 1, j2] != -2)
+                else if (DoubleNotEquals(S[i2 - 1, j2], -2))
                 {
                     a3x = X[j2] + S[i2 - 1, j2] * nx;
                     a3y = Y[i2 - 1];
@@ -2876,7 +2877,7 @@ namespace wContour
             }
             else    //---- Trace from right
             {
-                if (S[i2 + 1, j2 - 1] != -2 && S[i2, j2 - 1] != -2)
+                if (DoubleNotEquals(S[i2 + 1, j2 - 1], -2) && DoubleNotEquals(S[i2, j2 - 1], -2))
                 {
                     if (S[i2 + 1, j2 - 1] > S[i2, j2 - 1])    //---- < changed to >
                     {
@@ -2897,7 +2898,7 @@ namespace wContour
                         isS = true;
                     }
                 }
-                else if (S[i2 + 1, j2 - 1] != -2 && S[i2, j2 - 1] == -2)
+                else if (DoubleNotEquals(S[i2 + 1, j2 - 1], -2) && DoubleEquals(S[i2, j2 - 1], -2))
                 {
                     a3x = X[j2 - 1] + S[i2 + 1, j2 - 1] * nx;
                     a3y = Y[i2 + 1];
@@ -2906,7 +2907,7 @@ namespace wContour
                     S[i3, j3] = -2;
                     isS = true;
                 }
-                else if (S[i2 + 1, j2 - 1] == -2 && S[i2, j2 - 1] != -2)
+                else if (DoubleEquals(S[i2 + 1, j2 - 1], -2) && DoubleNotEquals(S[i2, j2 - 1], -2))
                 {
                     a3x = X[j2 - 1] + S[i2, j2 - 1] * nx;
                     a3y = Y[i2];
@@ -2915,7 +2916,7 @@ namespace wContour
                     S[i3, j3] = -2;
                     isS = true;
                 }
-                else if (H[i2, j2 - 1] != -2)
+                else if (DoubleNotEquals(H[i2, j2 - 1], -2))
                 {
                     a3x = X[j2 - 1];
                     a3y = Y[i2] + H[i2, j2 - 1] * ny;
@@ -2938,7 +2939,7 @@ namespace wContour
             double a3x, a3y;
             if (i1 < i2)    //---- Trace from bottom
             {
-                if (H[i2, j2] != -2 && H[i2, j2 + 1] != -2)
+                if (DoubleNotEquals(H[i2, j2], -2) && DoubleNotEquals(H[i2, j2 + 1], -2))
                 {
                     if (H[i2, j2] < H[i2, j2 + 1])
                     {
@@ -2957,7 +2958,7 @@ namespace wContour
                         H[i3, j3] = -2;
                     }
                 }
-                else if (H[i2, j2] != -2 && H[i2, j2 + 1] == -2)
+                else if (DoubleNotEquals(H[i2, j2], -2) && DoubleEquals(H[i2, j2 + 1], -2))
                 {
                     a3x = X[j2];
                     a3y = Y[i2] + H[i2, j2] * ny;
@@ -2965,7 +2966,7 @@ namespace wContour
                     j3 = j2;
                     H[i3, j3] = -2;
                 }
-                else if (H[i2, j2] == -2 && H[i2, j2 + 1] != -2)
+                else if (DoubleEquals(H[i2, j2], -2) && DoubleNotEquals(H[i2, j2 + 1], -2))
                 {
                     a3x = X[j2 + 1];
                     a3y = Y[i2] + H[i2, j2 + 1] * ny;
@@ -2984,7 +2985,7 @@ namespace wContour
             }
             else if (j1 < j2)    //---- Trace from left
             {
-                if (S[i2, j2] != -2 && S[i2 + 1, j2] != -2)
+                if (DoubleNotEquals(S[i2, j2], -2) && DoubleNotEquals(S[i2 + 1, j2], -2))
                 {
                     if (S[i2, j2] < S[i2 + 1, j2])
                     {
@@ -3003,7 +3004,7 @@ namespace wContour
                         S[i3, j3] = -2;
                     }
                 }
-                else if (S[i2, j2] != -2 && S[i2 + 1, j2] == -2)
+                else if (DoubleNotEquals(S[i2, j2], -2) && DoubleEquals(S[i2 + 1, j2], -2))
                 {
                     a3x = X[j2] + S[i2, j2] * nx;
                     a3y = Y[i2];
@@ -3011,7 +3012,7 @@ namespace wContour
                     j3 = j2;
                     S[i3, j3] = -2;
                 }
-                else if (S[i2, j2] == -2 && S[i2 + 1, j2] != -2)
+                else if (DoubleEquals(S[i2, j2], -2) && DoubleNotEquals(S[i2 + 1, j2], -2))
                 {
                     a3x = X[j2] + S[i2 + 1, j2] * nx;
                     a3y = Y[i2 + 1];
@@ -3030,7 +3031,7 @@ namespace wContour
             }
             else if (X[j2] < a2x)    //---- Trace from top
             {
-                if (H[i2 - 1, j2] != -2 && H[i2 - 1, j2 + 1] != -2)
+                if (DoubleNotEquals(H[i2 - 1, j2], -2) && DoubleNotEquals(H[i2 - 1, j2 + 1], -2))
                 {
                     if (H[i2 - 1, j2] > H[i2 - 1, j2 + 1])    //---- < changed to >
                     {
@@ -3049,7 +3050,7 @@ namespace wContour
                         H[i3, j3] = -2;
                     }
                 }
-                else if (H[i2 - 1, j2] != -2 && H[i2 - 1, j2 + 1] == -2)
+                else if (DoubleNotEquals(H[i2 - 1, j2], -2) && DoubleEquals(H[i2 - 1, j2 + 1], -2))
                 {
                     a3x = X[j2];
                     a3y = Y[i2 - 1] + H[i2 - 1, j2] * ny;
@@ -3057,7 +3058,7 @@ namespace wContour
                     j3 = j2;
                     H[i3, j3] = -2;
                 }
-                else if (H[i2 - 1, j2] == -2 && H[i2 - 1, j2 + 1] != -2)
+                else if (DoubleEquals(H[i2 - 1, j2], -2) && DoubleNotEquals(H[i2 - 1, j2 + 1], -2))
                 {
                     a3x = X[j2 + 1];
                     a3y = Y[i2 - 1] + H[i2 - 1, j2 + 1] * ny;
@@ -3076,7 +3077,7 @@ namespace wContour
             }
             else    //---- Trace from right
             {
-                if (S[i2 + 1, j2 - 1] != -2 && S[i2, j2 - 1] != -2)
+                if (DoubleNotEquals(S[i2 + 1, j2 - 1], -2) && DoubleNotEquals(S[i2, j2 - 1], -2))
                 {
                     if (S[i2 + 1, j2 - 1] > S[i2, j2 - 1])    //---- < changed to >
                     {
@@ -3095,7 +3096,7 @@ namespace wContour
                         S[i3, j3] = -2;
                     }
                 }
-                else if (S[i2 + 1, j2 - 1] != -2 && S[i2, j2 - 1] == -2)
+                else if (DoubleNotEquals(S[i2 + 1, j2 - 1], -2) && DoubleEquals(S[i2, j2 - 1], -2))
                 {
                     a3x = X[j2 - 1] + S[i2 + 1, j2 - 1] * nx;
                     a3y = Y[i2 + 1];
@@ -3103,7 +3104,7 @@ namespace wContour
                     j3 = j2 - 1;
                     S[i3, j3] = -2;
                 }
-                else if (S[i2 + 1, j2 - 1] == -2 && S[i2, j2 - 1] != -2)
+                else if (DoubleEquals(S[i2 + 1, j2 - 1], -2) && DoubleNotEquals(S[i2, j2 - 1], -2))
                 {
                     a3x = X[j2 - 1] + S[i2, j2 - 1] * nx;
                     a3y = Y[i2];
@@ -3139,7 +3140,7 @@ namespace wContour
             PolyLine aLine;
             for (j = 0; j < n - 1; j++)    //---- Trace isoline from bottom
             {
-                if (S[0, j] != -2)    //---- Has tracing value
+                if (DoubleNotEquals(S[0, j], -2))    //---- Has tracing value
                 {
                     List<PointD> pointList = new List<PointD>();
                     i2 = 0;
@@ -3162,7 +3163,7 @@ namespace wContour
                         aPoint.X = a3x;
                         aPoint.Y = a3y;
                         pointList.Add(aPoint);
-                        if (i3 == m - 1 || j3 == n - 1 || a3y == Y[0] || a3x == X[0])
+                        if (i3 == m - 1 || j3 == n - 1 || DoubleEquals(a3y, Y[0]) || DoubleEquals(a3x, X[0]))
                             break;
 
                         a2x = a3x;
@@ -3203,7 +3204,7 @@ namespace wContour
             PolyLine aLine;
             for (i = 0; i < m - 1; i++)    //---- Trace isoline from Left
             {
-                if (H[i, 0] != -2)
+                if (DoubleNotEquals(H[i, 0], -2))
                 {
                     List<PointD> pointList = new List<PointD>();
                     i2 = i;
@@ -3227,7 +3228,7 @@ namespace wContour
                         aPoint.X = a3x;
                         aPoint.Y = a3y;
                         pointList.Add(aPoint);
-                        if (i3 == m - 1 || j3 == n - 1 || a3y == Y[0] || a3x == X[0])
+                        if (i3 == m - 1 || j3 == n - 1 || DoubleEquals(a3y, Y[0]) || DoubleEquals(a3x, X[0]))
                             break;
 
                         a2x = a3x;
@@ -3267,7 +3268,7 @@ namespace wContour
             PolyLine aLine;
             for (j = 0; j < n - 1; j++)
             {
-                if (S[m - 1, j] != -2)
+                if (DoubleNotEquals(S[m - 1, j], -2))
                 {
                     List<PointD> pointList = new List<PointD>();
                     i2 = m - 1;
@@ -3291,7 +3292,7 @@ namespace wContour
                         aPoint.X = a3x;
                         aPoint.Y = a3y;
                         pointList.Add(aPoint);
-                        if (i3 == m - 1 || j3 == n - 1 || a3y == Y[0] || a3x == X[0])
+                        if (i3 == m - 1 || j3 == n - 1 || DoubleEquals(a3y, Y[0]) || DoubleEquals(a3x, X[0]))
                             break;
 
                         a2x = a3x;
@@ -3332,7 +3333,7 @@ namespace wContour
             PolyLine aLine;
             for (i = 0; i < m - 1; i++)
             {
-                if (H[i, n - 1] != -2)
+                if (DoubleNotEquals(H[i, n - 1], -2))
                 {
                     List<PointD> pointList = new List<PointD>();
                     i2 = i;
@@ -3356,7 +3357,7 @@ namespace wContour
                         aPoint.X = a3x;
                         aPoint.Y = a3y;
                         pointList.Add(aPoint);
-                        if (i3 == m - 1 || j3 == n - 1 || a3y == Y[0] || a3x == X[0])
+                        if (i3 == m - 1 || j3 == n - 1 || DoubleEquals(a3y, Y[0]) || DoubleEquals(a3x, X[0]))
                             break;
 
                         a2x = a3x;
@@ -3398,7 +3399,7 @@ namespace wContour
             {
                 for (j = 1; j < n - 1; j++)
                 {
-                    if (H[i, j] != -2)
+                    if (DoubleNotEquals(H[i, j], -2))
                     {
                         List<PointD> pointList = new List<PointD>();
                         i2 = i;
@@ -3427,7 +3428,7 @@ namespace wContour
                             aPoint.X = a3x;
                             aPoint.Y = a3y;
                             pointList.Add(aPoint);
-                            if (Math.Abs(a3y - sy) < 0.000001 && Math.Abs(a3x - sx) < 0.000001)
+                            if (DoubleEquals(a3y, sy) && DoubleEquals(a3x, sx))
                                 break;
 
                             a2x = a3x;
@@ -3458,7 +3459,7 @@ namespace wContour
             {
                 for (j = 1; j < n - 2; j++)
                 {
-                    if (S[i, j] != -2)
+                    if (DoubleNotEquals(S[i, j], -2))
                     {
                         List<PointD> pointList = new List<PointD>();
                         i2 = i;
@@ -3484,7 +3485,7 @@ namespace wContour
                             aPoint.X = a3x;
                             aPoint.Y = a3y;
                             pointList.Add(aPoint);
-                            if (Math.Abs(a3y - sy) < 0.000001 && Math.Abs(a3x - sx) < 0.000001)
+                            if (DoubleEquals(a3y, sy) && DoubleEquals(a3x, sx))
                                 break;
 
                             a2x = a3x;
@@ -3586,7 +3587,7 @@ namespace wContour
                             }
                             else
                             {
-                                if (aValue == bValue)
+                                if (DoubleEquals(aValue, bValue))
                                 {
                                     if (aLine.Value > aValue)
                                         bValue = aLine.Value;
@@ -3600,7 +3601,7 @@ namespace wContour
                             aPoint = newPList[0];
                             //If Not (Math.Abs(bP.point.X - aPoint.X) < 0.000001 And _
                             //  Math.Abs(bP.point.Y - aPoint.Y) < 0.000001) Then    '---- Start point
-                            if (!(bP.Point.X == aPoint.X && bP.Point.Y == aPoint.Y))    //---- Start point
+                            if (!(DoubleEquals(bP.Point.X, aPoint.X) && DoubleEquals(bP.Point.Y, aPoint.Y)))    //---- Start point
                                 newPList.Reverse();
 
                             aPList.AddRange(newPList);
@@ -3682,7 +3683,7 @@ namespace wContour
                             }
                             else
                             {
-                                if (aValue == bValue)
+                                if (DoubleEquals(aValue, bValue))
                                 {
                                     if (aLine.Value > aValue)
                                         bValue = aLine.Value;
@@ -3696,7 +3697,7 @@ namespace wContour
                             aPoint = newPList[0];
                             //If Not (Math.Abs(bP.point.X - aPoint.X) < 0.000001 And _
                             //  Math.Abs(bP.point.Y - aPoint.Y) < 0.000001) Then    '---- Start point
-                            if (!(bP.Point.X == aPoint.X && bP.Point.Y == aPoint.Y))    //---- Start point
+                            if (!(DoubleEquals(bP.Point.X, aPoint.X) && DoubleEquals(bP.Point.Y, aPoint.Y)))    //---- Start point
                                 newPList.Reverse();
 
                             aPList.AddRange(newPList);
@@ -3785,7 +3786,7 @@ namespace wContour
                 bool IsSides = true;
                 bool IfSameValue = false;    //---- If all boder polygon lines have same value
                 aPolygon = aPolygonList[0];
-                if (aPolygon.LowValue == aPolygon.HighValue)
+                if (DoubleEquals(aPolygon.LowValue, aPolygon.HighValue))
                 {
                     IsSides = false;
                     outPIdx = aPolygon.StartPointIdx;
@@ -3807,7 +3808,7 @@ namespace wContour
                         }
                         bP = lineBorderList[outPIdx];
                         aLine = aLineList[bP.Id];
-                        if (aLine.Value == aPolygon.LowValue)
+                        if (DoubleEquals(aLine.Value, aPolygon.LowValue))
                         {
                             if (outPIdx == aPolygon.StartPointIdx)
                             {
@@ -3840,11 +3841,11 @@ namespace wContour
                             if (cBound1.xMin > cBound2.xMin && cBound1.yMin > cBound2.yMin &&
                               cBound1.xMax < cBound2.xMax && cBound1.yMax < cBound2.yMax)
                             {
-                                aPolygon.IsHighCenter = false;                                
+                                aPolygon.IsHighCenter = false;
                             }
                             else
                             {
-                                aPolygon.IsHighCenter = true;                                
+                                aPolygon.IsHighCenter = true;
                             }
                             //aPolygonList[i] = aPolygon;
                         }
@@ -3866,7 +3867,7 @@ namespace wContour
                     for (i = 0; i < aPolygonList.Count; i++)
                     {
                         aPolygon = aPolygonList[i];
-                        if (aPolygon.LowValue == aPolygon.HighValue)
+                        if (DoubleEquals(aPolygon.LowValue, aPolygon.HighValue))
                         {
                             IsSides = false;
                             outPIdx = aPolygon.StartPointIdx;
@@ -3887,7 +3888,7 @@ namespace wContour
                                 }
                                 bP = lineBorderList[outPIdx];
                                 aLine = aLineList[bP.Id];
-                                if (aLine.Value == aPolygon.LowValue)
+                                if (DoubleEquals(aLine.Value, aPolygon.LowValue))
                                 {
                                     if (outPIdx == aPolygon.StartPointIdx)
                                         break;
@@ -3942,7 +3943,7 @@ namespace wContour
                 aPolygon.IsHighCenter = false;
                 if (cPolygonlist.Count > 0)
                 {
-                    if ((cPolygonlist[0].LowValue == max))
+                    if (DoubleEquals(cPolygonlist[0].LowValue, max))
                     {
                         aLine.Value = contour[contour.Length - 1];
                         aPolygon.IsHighCenter = true;
@@ -4012,7 +4013,7 @@ namespace wContour
                                     aPolygon.IsHighCenter = false;
                                     //aPolygonList[i] = aPolygon;                                    
                                 }
-                                else if (aValue == bValue)
+                                else if (DoubleEquals(aValue, bValue))
                                 {
                                     if (bPolygon.IsHighCenter)
                                     {
@@ -4028,8 +4029,7 @@ namespace wContour
             }
 
             return aPolygonList;
-        }        
-
+        }
         private static List<Polygon> TracingPolygons(List<PolyLine> LineList, List<BorderPoint> borderList)
         {
             if (LineList.Count == 0)
@@ -4106,7 +4106,7 @@ namespace wContour
                             }
                             else
                             {
-                                if (aValue == bValue)
+                                if (DoubleEquals(aValue, bValue))
                                 {
                                     if (aLine.Value > aValue)
                                         bValue = aLine.Value;
@@ -4120,7 +4120,7 @@ namespace wContour
                             aPoint = newPList[0];
                             //If Not (Math.Abs(bP.point.X - aPoint.X) < 0.000001 And _
                             //  Math.Abs(bP.point.Y - aPoint.Y) < 0.000001) Then    '---- Start point
-                            if (!(bP.Point.X == aPoint.X && bP.Point.Y == aPoint.Y))    //---- Start point
+                            if (!(DoubleEquals(bP.Point.X, aPoint.X) && DoubleEquals(bP.Point.Y, aPoint.Y)))    //---- Start point
                                 newPList.Reverse();
 
                             aPList.AddRange(newPList);
@@ -4155,7 +4155,7 @@ namespace wContour
                                 aPolygon.OutLine.Value = aValue;
                                 aPolygon.IsHighCenter = true;
                                 aPolygon.HoleLines = new List<PolyLine>();
-                                if (aValue == bValue)
+                                if (DoubleEquals(aValue, bValue))
                                 {
                                     if (cValue < aValue)
                                         aPolygon.IsHighCenter = false;
@@ -4214,7 +4214,7 @@ namespace wContour
                             }
                             else
                             {
-                                if (aValue == bValue)
+                                if (DoubleEquals(aValue, bValue))
                                 {
                                     if (aLine.Value > aValue)
                                         bValue = aLine.Value;
@@ -4228,7 +4228,7 @@ namespace wContour
                             aPoint = newPList[0];
                             //If Not (Math.Abs(bP.point.X - aPoint.X) < 0.000001 And _
                             //  Math.Abs(bP.point.Y - aPoint.Y) < 0.000001) Then    '---- Start point
-                            if (!(bP.Point.X == aPoint.X && bP.Point.Y == aPoint.Y))    //---- Start point
+                            if (!(DoubleEquals(bP.Point.X, aPoint.X) && DoubleEquals(bP.Point.Y, aPoint.Y)))    //---- Start point
                                 newPList.Reverse();
 
                             aPList.AddRange(newPList);
@@ -4263,7 +4263,7 @@ namespace wContour
                                 aPolygon.OutLine.Value = aValue;
                                 aPolygon.IsHighCenter = true;
                                 aPolygon.HoleLines = new List<PolyLine>();
-                                if (aValue == bValue)
+                                if (DoubleEquals(aValue, bValue))
                                 {
                                     if (cValue < aValue)
                                         aPolygon.IsHighCenter = false;
@@ -4357,10 +4357,10 @@ namespace wContour
                 if ((borderList[i]).Id == -1)
                     continue;
 
-                pIdx = i;                
+                pIdx = i;
                 lineBorderList.Add(borderList[i]);
                 bP = borderList[pIdx];
-                b1Point = borderList[pIdx].Point;                    
+                b1Point = borderList[pIdx].Point;
 
                 //---- Clockwise traceing
                 if (timesArray[pIdx] < 1)
@@ -4401,14 +4401,14 @@ namespace wContour
                                     break;
 
                                 aPList.Add(bP.Point);
-                                timesArray[pIdx] += 1;                                
+                                timesArray[pIdx] += 1;
                             }
                             else    //---- endpoint of contour
                             {
                                 if (timesArray[pIdx] == 1)
                                     break;
 
-                                timesArray[pIdx] += 1;                                
+                                timesArray[pIdx] += 1;
                                 aLine = aLineList[bP.Id];
 
                                 newPList = new List<PointD>(aLine.PointList);
@@ -4426,7 +4426,7 @@ namespace wContour
                                         if ((borderList[j]).Id == bP.Id)
                                         {
                                             pIdx = j;
-                                            timesArray[pIdx] += 1;                                            
+                                            timesArray[pIdx] += 1;
                                             break;
                                         }
                                     }
@@ -4451,16 +4451,16 @@ namespace wContour
                                     aPolygon.IsHighCenter = inPolygon.IsHighCenter;
                                     aPolygon.OutLine.Type = "Border";
                                     aPolygon.HoleLines = new List<PolyLine>();
-                                    aPolygonList.Add(aPolygon);                                    
+                                    aPolygonList.Add(aPolygon);
                                 }
                                 break;
                             }
                             pIdx += 1;
                             if (pIdx == pNum)
-                                pIdx = 0;                            
+                                pIdx = 0;
                         }
                     }
-                }                
+                }
 
                 //---- Anticlockwise traceing
                 pIdx = i;
@@ -4568,7 +4568,7 @@ namespace wContour
             return aPolygonList;
         }
 
-        private static List<Polygon> JudgePolygonHighCenter(List<Polygon> borderPolygons, List<Polygon> closedPolygons, 
+        private static List<Polygon> JudgePolygonHighCenter(List<Polygon> borderPolygons, List<Polygon> closedPolygons,
             List<PolyLine> aLineList, List<BorderPoint> borderList)
         {
             int i, j;
@@ -4605,7 +4605,7 @@ namespace wContour
                     min = max;
                     max = aValue;
                     aPolygon.IsHighCenter = false;
-                }  
+                }
                 aLine = new PolyLine();
                 aLine.Type = "Border";
                 aLine.Value = aValue;
@@ -4619,15 +4619,15 @@ namespace wContour
                 {
                     aPolygon.IsBorder = true;
                     aPolygon.LowValue = min;
-                    aPolygon.HighValue = max;                                      
+                    aPolygon.HighValue = max;
                     aBound = new Extent();
                     aPolygon.Area = GetExtentAndArea(aLine.PointList, ref aBound);
                     aPolygon.IsClockWise = IsClockwise(aLine.PointList);
                     aPolygon.Extent = aBound;
                     aPolygon.OutLine = aLine;
-                    aPolygon.HoleLines = new List<PolyLine>();                    
+                    aPolygon.HoleLines = new List<PolyLine>();
                     borderPolygons.Add(aPolygon);
-                }                                                 
+                }
             }
 
             //---- Add close polygons to form total polygons list
@@ -4661,7 +4661,7 @@ namespace wContour
                                     aPolygon.IsHighCenter = false;
                                     //borderPolygons[i] = aPolygon;
                                 }
-                                else if (aValue == bValue)
+                                else if (DoubleEquals(aValue, bValue))
                                 {
                                     if (bPolygon.IsHighCenter)
                                     {
@@ -4770,7 +4770,7 @@ namespace wContour
                                     aPolygon.IsHighCenter = false;
                                     //borderPolygons[i] = aPolygon;
                                 }
-                                else if (aValue == bValue)
+                                else if (DoubleEquals(aValue, bValue))
                                 {
                                     if (bPolygon.IsHighCenter)
                                     {
@@ -4883,7 +4883,7 @@ namespace wContour
         //                    }
         //                    else
         //                    {
-        //                        if (aValue == bValue)
+        //                        if (DoubleEquals(aValue, bValue))
         //                        {
         //                            if (aLine.Value > aValue)
         //                            {
@@ -5012,7 +5012,7 @@ namespace wContour
         //                    }
         //                    else
         //                    {
-        //                        if (aValue == bValue)
+        //                        if (DoubleEquals(aValue, bValue))
         //                        {
         //                            if (aLine.Value > aValue)
         //                            {
@@ -5227,7 +5227,7 @@ namespace wContour
         //                    }
         //                    else
         //                    {
-        //                        if (aValue == bValue)
+        //                        if (DoubleEquals(aValue, bValue))
         //                        {
         //                            if (aLine.Value > aValue)
         //                            {
@@ -5284,7 +5284,7 @@ namespace wContour
         //                        aPolygon.OutLine.PointList = new List<PointD>(aPList);
         //                        aPolygon.OutLine.Value = aValue;
         //                        aPolygon.IsHighCenter = true;
-        //                        if (aValue == bValue)
+        //                        if (DoubleEquals(aValue, bValue))
         //                        {
         //                            if (cValue < aValue)
         //                                aPolygon.IsHighCenter = false;
@@ -5364,7 +5364,7 @@ namespace wContour
         //                    }
         //                    else
         //                    {
-        //                        if (aValue == bValue)
+        //                        if (DoubleEquals(aValue, bValue))
         //                        {
         //                            if (aLine.Value > aValue)
         //                            {
@@ -5418,7 +5418,7 @@ namespace wContour
         //                        aPolygon.OutLine.PointList = new List<PointD>(aPList);
         //                        aPolygon.OutLine.Value = aValue;
         //                        aPolygon.IsHighCenter = true;
-        //                        if (aValue == bValue)
+        //                        if (DoubleEquals(aValue, bValue))
         //                        {
         //                            if (cValue < aValue)
         //                                aPolygon.IsHighCenter = false;
@@ -5707,7 +5707,7 @@ namespace wContour
         //                            aPolygonList.Insert(i, aPolygon);
         //                            aPolygonList.RemoveAt(i + 1);
         //                        }
-        //                        else if (aValue == bValue)
+        //                        else if (DoubleEquals(aValue, bValue))
         //                        {
         //                            if (bPolygon.IsHighCenter)
         //                            {
@@ -5731,7 +5731,7 @@ namespace wContour
         private static List<Polygon> TracingPolygons_Ring(List<PolyLine> LineList, List<BorderPoint> borderList, Border aBorder,
             double[] contour, int[] pNums)
         {
-            List<Polygon> aPolygonList = new List<Polygon>();            
+            List<Polygon> aPolygonList = new List<Polygon>();
             List<PolyLine> aLineList = new List<PolyLine>();
             PolyLine aLine;
             PointD aPoint;
@@ -5770,7 +5770,7 @@ namespace wContour
                 {
                     continue;
                 }
-                pIdx = i;                
+                pIdx = i;
                 lineBorderList.Add(borderList[i]);
 
                 Boolean sameBorderIdx = false;    //The two end points of the contour line are on same inner border
@@ -5829,7 +5829,7 @@ namespace wContour
                             }
                             else
                             {
-                                if (aValue == bValue)
+                                if (DoubleEquals(aValue, bValue))
                                 {
                                     if (aLine.Value > aValue)
                                     {
@@ -5847,7 +5847,7 @@ namespace wContour
                             //If Not (Math.Abs(bP.point.x - aPoint.x) < 0.000001 And _
                             //  Math.Abs(bP.point.y - aPoint.y) < 0.000001) Then    '---- Not start point
                             //---- Not start point
-                            if (!(bP.Point.X == aPoint.X && bP.Point.Y == aPoint.Y))
+                            if (!(DoubleEquals(bP.Point.X, aPoint.X) && DoubleEquals(bP.Point.Y, aPoint.Y)))
                             {
                                 newPList.Reverse();
                             }
@@ -5869,7 +5869,7 @@ namespace wContour
                                         {
                                             sameBorderIdx = true;
                                         }
-                                        break; 
+                                        break;
                                     }
                                 }
                             }
@@ -5923,7 +5923,7 @@ namespace wContour
                                 aPolygon.OutLine.PointList = aPList;
                                 aPolygon.OutLine.Value = aValue;
                                 aPolygon.IsHighCenter = true;
-                                if (aValue == bValue)
+                                if (DoubleEquals(aValue, bValue))
                                 {
                                     if (cValue < aValue)
                                         aPolygon.IsHighCenter = false;
@@ -6008,7 +6008,7 @@ namespace wContour
                             }
                             else
                             {
-                                if (aValue == bValue)
+                                if (DoubleEquals(aValue, bValue))
                                 {
                                     if (aLine.Value > aValue)
                                     {
@@ -6026,7 +6026,7 @@ namespace wContour
                             //If Not (Math.Abs(bP.point.x - aPoint.x) < 0.000001 And _
                             //  Math.Abs(bP.point.y - aPoint.y) < 0.000001) Then    '---- Start point
                             //---- Start point
-                            if (!(bP.Point.X == aPoint.X && bP.Point.Y == aPoint.Y))
+                            if (!(DoubleEquals(bP.Point.X, aPoint.X) && DoubleEquals(bP.Point.Y, aPoint.Y)))
                             {
                                 newPList.Reverse();
                             }
@@ -6047,7 +6047,7 @@ namespace wContour
                                         {
                                             sameBorderIdx = true;
                                         }
-                                        break; 
+                                        break;
                                     }
                                 }
                             }
@@ -6100,7 +6100,7 @@ namespace wContour
                                 aPolygon.OutLine.PointList = aPList;
                                 aPolygon.OutLine.Value = aValue;
                                 aPolygon.IsHighCenter = true;
-                                if (aValue == bValue)
+                                if (DoubleEquals(aValue, bValue))
                                 {
                                     if (cValue < aValue)
                                         aPolygon.IsHighCenter = false;
@@ -6168,11 +6168,11 @@ namespace wContour
             }
 
             //---- Juge isHighCenter for border polygons
-            if (aPolygonList .Count == 0)
+            if (aPolygonList.Count == 0)
             {
                 aLine = new PolyLine();
                 aLine.Type = "Border";
-                aLine.Value = contour[0];                
+                aLine.Value = contour[0];
                 aLine.PointList = new List<PointD>(aBorder.LineList[0].pointList);
 
                 if (aLine.PointList.Count > 0)
@@ -6188,7 +6188,7 @@ namespace wContour
                     aPolygon.IsHighCenter = false;
                     aPolygonList.Add(aPolygon);
                 }
-            }            
+            }
 
             //---- Add close polygons to form total polygons list
             aPolygonList.AddRange(cPolygonlist);
@@ -6222,7 +6222,7 @@ namespace wContour
                                     //aPolygonList.Insert(i, aPolygon);
                                     //aPolygonList.RemoveAt(i + 1);
                                 }
-                                else if (aValue == bValue)
+                                else if (DoubleEquals(aValue, bValue))
                                 {
                                     if (bPolygon.IsHighCenter)
                                     {
@@ -6242,7 +6242,7 @@ namespace wContour
         }
 
         private static List<Polygon> AddPolygonHoles(List<Polygon> polygonList)
-        {                        
+        {
             List<Polygon> holePolygons = new List<Polygon>();
             int i, j;
             for (i = 0; i < polygonList.Count; i++)
@@ -6262,7 +6262,7 @@ namespace wContour
                 List<Polygon> newPolygons = new List<Polygon>();
                 for (i = 1; i < holePolygons.Count; i++)
                 {
-                    Polygon aPolygon = holePolygons[i];                  
+                    Polygon aPolygon = holePolygons[i];
                     for (j = i - 1; j >= 0; j--)
                     {
                         Polygon bPolygon = holePolygons[j];
@@ -6277,7 +6277,7 @@ namespace wContour
                                 break;
                             }
                         }
-                    }                    
+                    }
                 }
                 List<Polygon> hole1Polygons = new List<Polygon>();
                 for (i = 0; i < holePolygons.Count; i++)
@@ -6479,7 +6479,7 @@ namespace wContour
             PointD q1, q2, p1, p2, IPoint;
             Line lineA, lineB;
             List<PointD> newPlist = new List<PointD>();
-            PolyLine bLine;            
+            PolyLine bLine;
             p1 = aPList[0];
             for (i = 1; i < aPList.Count; i++)
             {
@@ -6937,7 +6937,7 @@ namespace wContour
                 List<PointD> newPlist = new List<PointD>();
                 PolyLine bLine;
                 p1 = aPList[0];
-                int inIdx = -1, outIdx = -1;                
+                int inIdx = -1, outIdx = -1;
                 bool newLine = true;
                 int a1 = 0;
                 for (i = 1; i < aPList.Count; i++)
@@ -6951,7 +6951,7 @@ namespace wContour
                             lineA.P1 = p1;
                             lineA.P2 = p2;
                             q1 = borderList[borderList.Count - 1].Point;
-                            IPoint = new PointD();                            
+                            IPoint = new PointD();
                             for (j = 0; j < borderList.Count; j++)
                             {
                                 q2 = borderList[j].Point;
@@ -6959,7 +6959,7 @@ namespace wContour
                                 lineB.P1 = q1;
                                 lineB.P2 = q2;
                                 if (IsLineSegmentCross(lineA, lineB))
-                                {                                    
+                                {
                                     IPoint = GetCrossPoint(lineA, lineB);
                                     aBP = new BorderPoint();
                                     aBP.Id = newPolylines.Count;
@@ -6991,7 +6991,7 @@ namespace wContour
                                 lineB.P1 = q1;
                                 lineB.P2 = q2;
                                 if (IsLineSegmentCross(lineA, lineB))
-                                {                                    
+                                {
                                     if (!newLine)
                                     {
                                         if (inIdx - outIdx >= 1 && inIdx - outIdx <= 10)
@@ -7025,10 +7025,10 @@ namespace wContour
                                     aBP.Point = IPoint;
                                     borderList.Insert(j, aBP);
                                     outIdx = j;
-                                    a1 = inIdx;                                    
+                                    a1 = inIdx;
 
                                     newLine = false;
-                                    break;                                    
+                                    break;
                                 }
                                 q1 = q2;
                             }
@@ -7049,7 +7049,7 @@ namespace wContour
             }
 
             if (newPolylines.Count > 0)
-            {                
+            {
                 //Tracing polygons
                 newPolygons = TracingClipPolygons(inPolygon, newPolylines, borderList);
             }
@@ -7126,12 +7126,12 @@ namespace wContour
                     //    bPList.Add(aPList[i]);
 
                     bPList.Add(bPList[0]);
-                    aPList = new List<PointD>(bPList);                    
+                    aPList = new List<PointD>(bPList);
                 }
                 else    //the input polygon is inside the cut polygon
                 {
                     newPolygons.Add(inPolygon);
-                    return newPolygons;                  
+                    return newPolygons;
                 }
             }
 
@@ -7151,7 +7151,7 @@ namespace wContour
             PointD q1, q2, p1, p2, IPoint;
             Line lineA, lineB;
             List<PointD> newPlist = new List<PointD>();
-            PolyLine bLine;            
+            PolyLine bLine;
             p1 = aPList[0];
             int inIdx = -1, outIdx = -1;
             int a1 = 0;
@@ -7175,20 +7175,20 @@ namespace wContour
                             lineB.P1 = q1;
                             lineB.P2 = q2;
                             if (IsLineSegmentCross(lineA, lineB))
-                            {                                
+                            {
                                 IPoint = GetCrossPoint(lineA, lineB);
                                 aBP = new BorderPoint();
                                 aBP.Id = newPolylines.Count;
                                 aBP.Point = IPoint;
                                 borderList.Insert(j, aBP);
-                                inIdx = j;               
+                                inIdx = j;
                                 break;
                             }
                             q1 = q2;
                         }
-                        newPlist.Add(IPoint);                        
+                        newPlist.Add(IPoint);
                     }
-                    newPlist.Add(aPList[i]);                    
+                    newPlist.Add(aPList[i]);
                     isInPolygon = true;
                 }
                 else
@@ -7207,7 +7207,7 @@ namespace wContour
                             lineB.P1 = q1;
                             lineB.P2 = q2;
                             if (IsLineSegmentCross(lineA, lineB))
-                            {                                
+                            {
                                 if (!isNewLine)
                                 {
                                     if (inIdx - outIdx >= 1 && inIdx - outIdx <= 10)
@@ -7253,17 +7253,17 @@ namespace wContour
                         bLine.Value = inPolygon.OutLine.Value;
                         bLine.Type = inPolygon.OutLine.Type;
                         bLine.PointList = newPlist;
-                        newPolylines.Add(bLine);                        
+                        newPolylines.Add(bLine);
 
                         isInPolygon = false;
-                        newPlist = new List<PointD>();                        
+                        newPlist = new List<PointD>();
                     }
                 }
                 p1 = p2;
             }
-            
+
             if (newPolylines.Count > 0)
-            {                                                              
+            {
                 //Tracing polygons
                 newPolygons = TracingClipPolygons(inPolygon, newPolylines, borderList);
             }
@@ -7716,7 +7716,7 @@ namespace wContour
         {
             Single t;
             int i;
-            double X = 0, Y = 0;            
+            double X = 0, Y = 0;
             PointD aPoint;
             List<PointD> newPList = new List<PointD>();
             int sum = pointList.Count;
@@ -7829,7 +7829,7 @@ namespace wContour
         #region Other Methods
         private static Extent GetExtent(List<PointD> pList)
         {
-            double  minX, minY, maxX, maxY;
+            double minX, minY, maxX, maxY;
             int i;
             PointD aPoint;
             aPoint = pList[0];
@@ -7857,7 +7857,7 @@ namespace wContour
             aExtent.xMin = minX;
             aExtent.yMin = minY;
             aExtent.xMax = maxX;
-            aExtent.yMax = maxY;            
+            aExtent.yMax = maxY;
 
             return aExtent;
         }
@@ -7941,7 +7941,7 @@ namespace wContour
             else
                 return false;
 
-        }        
+        }
 
         private static bool IsLineSegmentCross(Line lineA, Line lineB)
         {
@@ -7997,9 +7997,9 @@ namespace wContour
                   (aP2.X - aP1.X) * (bP1.Y - aP1.Y);
             double XP2 = (bP2.X - aP1.X) * (aP2.Y - aP1.Y) -
               (aP2.X - aP1.X) * (bP2.Y - aP1.Y);
-            if (XP1 == 0)
+            if (DoubleEqualsZero(XP1))
                 IPoint = bP1;
-            else if (XP2 == 0)
+            else if (DoubleEqualsZero(XP2))
                 IPoint = bP2;
             else
             {
@@ -8030,9 +8030,9 @@ namespace wContour
                   (lineA.P2.X - lineA.P1.X) * (lineB.P1.Y - lineA.P1.Y);
             double XP2 = (lineB.P2.X - lineA.P1.X) * (lineA.P2.Y - lineA.P1.Y) -
               (lineA.P2.X - lineA.P1.X) * (lineB.P2.Y - lineA.P1.Y);
-            if (XP1 == 0)
+            if (DoubleEqualsZero(XP1))
                 IPoint = lineB.P1;
-            else if (XP2 == 0)
+            else if (DoubleEqualsZero(XP2))
                 IPoint = lineB.P2;
             else
             {
@@ -8070,12 +8070,13 @@ namespace wContour
                 for (j = 1; j < BorderList.Count; j++)
                 {
                     aBPoint = BorderList[j];
-                    p2 = aBPoint.Point;                    
+                    p2 = aBPoint.Point;
                     if ((p3.X - p1.X) * (p3.X - p2.X) <= 0)
-                    {                       
+                    {
                         if ((p3.Y - p1.Y) * (p3.Y - p2.Y) <= 0)
                         {
-                            if ((p3.X - p1.X) * (p2.Y - p1.Y) - (p2.X - p1.X) * (p3.Y - p1.Y) <= 0.001)
+                            var d = (p3.X - p1.X) * (p2.Y - p1.Y) - (p2.X - p1.X) * (p3.Y - p1.Y);
+                            if (DoubleEqualsZero(d))
                             {
                                 BorderList.Insert(j, bP);
                                 break;
@@ -8121,7 +8122,8 @@ namespace wContour
                             if ((p3.Y - p1.Y) * (p3.Y - p2.Y) <= 0 || (DoubleEquals(p3.Y, p1.Y) || DoubleEquals(p3.Y, p2.Y)))
                             //if ((p3.Y - p1.Y) * (p3.Y - p2.Y) <= 0)
                             {
-                                if ((p3.X - p1.X) * (p2.Y - p1.Y) - (p2.X - p1.X) * (p3.Y - p1.Y) <= 0.001)
+                                var d = (p3.X - p1.X) * (p2.Y - p1.Y) - (p2.X - p1.X) * (p3.Y - p1.Y);
+                                if (DoubleEqualsZero(d))
                                 {
                                     BorderList.Insert(j, bP);
                                     break;
@@ -8166,7 +8168,7 @@ namespace wContour
 
                         bP.Point = aPoint;
                         IsInserted = false;
-                        if (aPoint.X == aBound.xMin)
+                        if (DoubleEquals(aPoint.X, aBound.xMin))
                         {
                             for (j = 0; j < LBPList.Count; j++)
                             {
@@ -8182,7 +8184,7 @@ namespace wContour
                                 LBPList.Add(bP);
 
                         }
-                        else if (aPoint.X == aBound.xMax)
+                        else if (DoubleEquals(aPoint.X, aBound.xMax))
                         {
                             for (j = 0; j < RBPList.Count; j++)
                             {
@@ -8198,7 +8200,7 @@ namespace wContour
                                 RBPList.Add(bP);
 
                         }
-                        else if (aPoint.Y == aBound.yMin)
+                        else if (DoubleEquals(aPoint.Y, aBound.yMin))
                         {
                             for (j = 0; j < BBPList.Count; j++)
                             {
@@ -8214,7 +8216,7 @@ namespace wContour
                                 BBPList.Add(bP);
 
                         }
-                        else if (aPoint.Y == aBound.yMax)
+                        else if (DoubleEquals(aPoint.Y, aBound.yMax))
                         {
                             for (j = 0; j < TBPList.Count; j++)
                             {
@@ -8310,7 +8312,7 @@ namespace wContour
                         break;
 
                     aEP = aEPList[j];
-                    if (Math.Abs(aEP.sPoint.X - p1.X) < 0.000001 && Math.Abs(aEP.sPoint.Y - p1.Y) < 0.000001)
+                    if (DoubleEquals(aEP.sPoint.X, p1.X) && DoubleEquals(aEP.sPoint.Y, p1.Y))
                     {
                         temEPList.Add(aEP);
                         aEPList.RemoveAt(j);
@@ -8410,7 +8412,8 @@ namespace wContour
                         {
                             if ((p3.Y - p1.Y) * (p3.Y - p2.Y) <= 0)
                             {
-                                if ((p3.X - p1.X) * (p2.Y - p1.Y) - (p2.X - p1.X) * (p3.Y - p1.Y) == 0)
+                                var d = (p3.X - p1.X) * (p2.Y - p1.Y) - (p2.X - p1.X) * (p3.Y - p1.Y);
+                                if (DoubleEqualsZero(d))
                                 {
                                     tempBPList.Insert(j, bP);
                                     break;
@@ -8434,33 +8437,6 @@ namespace wContour
             return newBPList;
         }
 
-        //private static bool DoubleEquals(double a, double b)
-        //{
-        //    if (b == 0)
-        //        return (Math.Abs(a - b) < 0.0000001);
-        //    else
-        //    {
-        //        if (Math.Abs(a - b) < 0.0000001)
-        //        {
-        //            if (Math.Abs(a / b - 1) < 0.001)
-        //                return true;
-        //            else
-        //                return false;
-        //        }
-        //        else
-        //            return false;
-        //    }
-        //}
-
-        private static bool DoubleEquals(double a, double b)
-        {
-            double difference = Math.Abs(a * 0.00001);
-            if (Math.Abs(a - b) < difference)
-                return true;
-            else
-                return false;
-        }
-
         private static double getAbsMinValue(double[,] S0)
         {
             double min = 0, v;
@@ -8473,7 +8449,7 @@ namespace wContour
                 for (j = 0; j < n; j++)
                 {
                     v = Math.Abs(S0[i, j]);
-                    if (v != 0)
+                    if (DoubleNotEquals(v, 0))
                     {
                         if (idx == 0)
                             min = v;
@@ -8483,7 +8459,7 @@ namespace wContour
                                 min = v;
                         }
                         idx += 1;
-                    }                    
+                    }
                 }
             }
 
@@ -8498,7 +8474,7 @@ namespace wContour
             int idx = 0;
             for (i = 1; i < n; i++)
             {
-                if (values[i] == 0.0)
+                if (DoubleEqualsZero(values[i]))
                     continue;
 
                 v = Math.Abs(values[i]);

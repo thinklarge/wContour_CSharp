@@ -148,6 +148,7 @@
     <Compile Include="Global\PolyLine.cs" />
     <Compile Include="Interpolate.cs" />
     <Compile Include="Legend.cs" />
+    <Compile Include="MathUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
